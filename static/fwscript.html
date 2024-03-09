@@ -34,6 +34,7 @@
 	  If you encounter certificate related errors when downloading the script from ChromeOS, then add <code>-k</code> to the curl command and script command to bypass SSL certificate checking as so:<br>
 	  <code>cd; curl -LOk mrchromebox.tech/firmware-util.sh && sudo bash firmware-util.sh</code><br>
       and press enter.<br>
+      IF USING TO UPDATE, READ: Due to Linux security measures, the firmware will lock down automatically. To bypass this, open your UEFI firmware settings, go to Advanced Configuration>Secure Boot Configuration and turn off "Attempt Secure Boot" if not already.
     </p>
     <p>
     <b>REALLY READ THIS</b>: Under ChromeOS, this script must be run from a crosh shell (logged in, normally or as a guest: CTRL+ALT+T, type 'shell', press enter) or VT2 (from login screen: CTRL+ALT+F2, login 'chronos'); it cannot be run from a crostini (penguin) terminal as that is a virtualized container and lacks the necessary access to read or modify the firmware.
