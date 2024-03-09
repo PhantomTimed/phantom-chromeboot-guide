@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Alternative OSes</title>
+  </head>
+  <body>
+    <h3 id="top">Alternative OSes</h3>
+    <p>
+      One of the great things about ChromeOS devices is the flexibility offered by their open-source foundation.  All ChromeOS devices support running Linux, many support running Windows, and one or two can even run OS X / MacOS.  Several popular installation methods are discussed below.
+    </p>   
+    <h4>chromebrew: a package manager for ChromeOS</h4>
+    <p>
+     <a href="http://skycocker.github.io/chromebrew/" target="_blank">chromebrew</a> is a package manager which allows you install various development tools inside of ChromeOS, which is really useful if you just want to do basic development work without the overhead of installing an addtional OS.  While not technically an alternative OS, it's certainly related and too useful not to mention :)
+    </p>
+    <h4>crouton: Linux inside ChromeOS via chroot</h4>
+    <p>
+     <a href="https://github.com/dnschneid/crouton" target="_blank">crouton</a> is a set of scripts that allow you to run a Ubuntu/Debian Linux environment from a chroot (segregated file system) within ChromeOS. The advantage here is that you never have to leave ChromeOS, and extensions are available which allow for tight integration.  You can also have multiple chroot instances and create/delete them at will.  The downside is that the Linux instance is still running on top of the ChromeOS kernel, which is a bit older (3.10-3.18) than current mainline Linux distributions use (4.5+).
+    </p>
+    <h4>crostini/Linux (Beta): Linux inside ChromeOS via a container</h4>
+    <p>
+     <a href="https://chromium.googlesource.com/chromiumos/docs/+/master/containers_and_vms.md#Overview" target="_blank">Crostini</a> is the umbrella term for making Linux application support easy to use and integrating well with Chrome OS. It largely focuses on getting you a Terminal with a container with easy access to install whatever developer-focused tools you might want. It's built-in to ChromeOS and all devices launched since 2017 support it (and some older ones as well). One of the big advantages of crostini over other approaches is that you don't need to enable ChromeOS Developer Mode in order to make use of it.<br>
+     The <a href="https://www.reddit.com/r/crostini/" target="_blank">crostini Reddit community</a> is a great resource for this.
+    </p>
+    <h4>chrx: Dual boot Linux along side ChromeOS</h4>
+    <p>
+     <a href="https://chrx.org" target="_blank">chrx</a> is a script which sets up a true dual boot environment: it repartitions your internal storage to make room, then installs your Linux flavor of choice (many Ubuntu variants and Fedora spins are supported). The advantage with the dual boot approach is that you're running a full, separate Linux distro with an up-to-date kernel.  The disadvantage is that the space allocated to your Linux install isn't easily resized (without wiping your ChromeOS userdata at least), and that you have to reboot and use keyboard shortcuts on the Developer Mode boot screen in order to choose which OS to boot.  Also, most recent ChromeOS hardware (pretty much anything from 2017 on) isn't well supported by current mainline Linux distributions.  Distros like <a href="https://galliumos.org" target="_blank">GalliumOS</a> which are targeted for ChromeOS hardware usually provide the best out-of-the-box experience for most users.
+    </p>
+    <p>
+    For devices with limited/non-upgradeable internal storage, Linux can also be installed to external (USB/SD) media instead of internal storage, though it's often significantly slower; one compromise is to use a USB3-attached SSD, though this isn't ideal from a portability aspect.
+    </p>
+    
+    <h4>Standalone Linux</h4>
+    <p>
+     On many Intel-based Chromebooks, you can simply boot a Linux ISO via the stock firmware's Legacy Boot mode and install like you would on any other PC. When installing Linux via ISO in conjunction with the stock firmware + Legacy Boot Mode, there are sometimes issues booting the install media due to bootloader conflicts (e.g., Syslinux) or setting the graphics mode (GRUB/Ubuntu 16.10) or broken sleep/suspend due to the TPM (all CR50 devices). Because of this, most devices will benefit from running the latest UEFI Full ROM firmware, which should be flashed prior to OS install when running Linux and not dual booting w/ChromeOS.
+    </p>
+    
+    <h4>Windows</h4>
+    <p>
+     Windows has historically been poorly supported on ChromeOS devices, mostly due to stock firmware that was built to do the absolute minimum to securely boot ChromeOS. With recent improvements in the UEFI firmware, however, Windows now runs extremely well on a fair number of ChromeOS devices. Haswell, Broadwell, and BayTrail devices run it pretty much as well as native devices, as do the SandyBridge/IvyBridge Acer C710 and the HP Pavilion Chromebook 14. Most Braswell devices are capable of running Windows reasonably well, but there are no touchscreen drivers, and the Acer R11 doesn't have audio drivers. There is currently no support for Skylake, Apollolake, or Kabylake ChromeOS devices (or anything newer / not explicitly listed as supported in the documentation on r/chrultrabook linked below).
+    </p>
+    <p>
+      Running Windows requires using the UEFI Full ROM firmware; there's no way to get it running properly via Legacy Boot Mode on the stock firmware, or older Legacy Full ROM firmware. It's highly recommended that you upgrade your SSD when possible, as 16GB is much more limiting for Windows than it is for ChromeOS or Linux. There are, however, some approaches available for compressing Windows if the storage in your Chromebook is non-upgradeable.
+    </p>
+    <p>
+      The best place for support running Windows on ChromeOS hardware is the <a href="https://www.reddit.com/r/chrultrabook/" target="_blank">chrultrabook Reddit community</a> where the fine folks there will do their best to help you make it happen. <br>
+      Be sure to read the 'Read This First / Getting Started' post as it contains instructions and links to the custom drivers needed.
+  </p>
+    <h4>macOS</h4>
+    <p>
+     Running macOS on Core i-based Haswell/Broadwell ChromeOS devices is possible, but requires a good deal of work and has a lot of limitations (too numerous to list here). The <a href="https://www.reddit.com/r/chrultrabook/" target="_blank">chrultrabook Reddit community</a> has a guide to getting things going on a Core i3 c720, and is a good starting point. Don't expect everything to work, and don't expect a ton of help.
+    </p>
+  </body>
+</html>
+
+
+

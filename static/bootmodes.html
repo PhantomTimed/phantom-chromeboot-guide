@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Legacy and UEFI Boot Modes</title>
+  </head>
+  <body>
+    <h3 id="top">Legacy Boot Mode</h3>
+    <p>
+      Legacy boot mode is an unsupported method for booting Linux distros available only on Intel/x86-based ChromeOS devices (sorry ARM owners).  It is invoked by pressing <span class="keystroke">[CTRL+L]</span> on the Developer Mode boot screen.  This key sequence directs the depthcharge firmware payload (which normally boots ChromeOS) to instead execute the payload in the RW_LEGACY firmware region.  That payload (normally SeaBIOS) can then boot most any Linux distro of your choice. Legacy Boot Mode requires a functional RW_LEGACY firmware component, as well as the <code>dev_boot_legacy</code> crossystem flag to be enabled. Otherwise, you will simply hear two beeps when pressing <span class="keystroke">[CTRL+L]</span>.
+    </p>
+    <p>
+      Legacy Boot support via RW_LEGACY/SeaBIOS was first added with the 2013 Chromebook Pixel (<a href="https://www.chromium.org/chromium-os/developer-information-for-chrome-os-devices/chromebook-pixel"  target="_blank">LINK</a>), and continued with the subsequent Haswell-based devices. However, in many cases the SeaBIOS payload included with the factory firmware had severe defects, ranging from no video output to non-functional USB ports.  In the case of Baytrail, Braswell, and Apollolake-based devices, the RW_LEGACY firmware was not included at all.  Fortunately, an RW_LEGACY firmware update is available for most recent models which correct these defects, offer improved funtionality, and add Legacy Boot Mode capability for previously unsupported devices. See the supported devices page for details.
+    </p>
+
+    <h3>SeaBIOS: The Legacy Boot Payload</h3>
+    <p>
+      Booting in Legacy Mode presents the user with the rather spartan looking SeaBIOS boot screen shown on the left below.  Pressing <span class="keystroke">[ESC]</span> when prompted before the timeout (~3s) will display the boot menu shown on the right.<br> <center><img src="../images/seabios_boot_1.png" style="max-width:47%;">&nbsp;&nbsp;&nbsp;<img src="../images/seabios_boot_2.png" style="max-width:47%;"></center><br>
+      With the boot menu displayed, simply press the number corresponding to the desired boot device. If the timeout occurs before <span class="keystroke">[ESC]</span> is pressed, the boot device with the highest priority will be booted.  This is normally the internal storage (SSD or eMMC) unless the user has opted to default to USB when installing the firmware (this applies to all firmware update types).
+    </p>
+    <p>
+      <strong>Note:</strong> If only one boot device is available -- either no USB/SD devices are attached, or they are not properly detected/initialized by SeaBIOS -- then the boot menu prompt ("Press ESC for boot menu") will not be shown, and the internal storage will be booted.  In the case where ChromeOS is still installed/is the only OS installed, this can result in the screen showing text indicating a kernel panic, or simply a blank screen.  If this happens, simply reboot and try using a different USB/SD device to install/boot from.
+    </p>
+    <h3>UEFI and the Future</h3>
+    <p>
+      The Firmware Utility Script now offers <a href="https://en.wikipedia.org/wiki/Unified_Extensible_Firmware_Interface" target="_blank">UEFI (Unified Extensible Firmware Interface)</a> Full ROM firmware for all Haswell, Broadwell, BayTrail, Braswell, Skylake, and Kabylake devices (as well as for both the SandyBridge and IvyBridge variants of the Acer C710, and the HP Pavilion Chromebook 14). UEFI is the successor to Legacy BIOS and is the firmware type used by virtually all Windows PC's and Macs shipped in the last 5+ years.
+    </p>
+    <p>
+      <center><img src="../images/tiano_splash.png" style="max-width:47%;">&nbsp;&nbsp;&nbsp;<img src="../images/tiano_boot.png" style="max-width:47%;"></center><br>
+      UEFI functionality is provided by the <a href="http://www.tianocore.org/" target="blank">Tianocore</a> coreboot payload.  The boot screen shown above is accessed by pressing ESC during the ~2s that the boot splash screen is shown. If no key is pressed, it will boot to the default boot target, as defined by the current boot order. You can adjust the boot order via the Boot Manager menu. If no UEFI boot devices are available, the firmware will dump you into the EFI shell; simply type 'exit' and hit enter to get to the firmware settings screen shown above. If you didn't get your USB boot media inserted in time, simply power off and back on, then hit ESC and select your USB from the list in the Boot Menu.
+    </p>
+    <p>
+      UEFI firmware on ChromeOS devices offers many benefits over the older Legacy BIOS offerings:
+      <ul>
+        <li>Integrated firmware updates for the ChromeOS EC (Embedded Controller)</li>
+        <li>Better Windows support and faster Windows boot time (50%+ faster)</li>
+        <li>Full working HDMI audio under Windows, without any special drivers or hackery</li>
+        <li>Support for compressed Windows installs</li>
+        <li>Better support for dual/triple/quad boot scenarios</li>
+        <li>Ability to run macOS on (some) Core i3/i5/i7-based machines</li>
+        <li>Better support for USB devices at boot time (SeaBIOS was/is quite finnicky)</li>
+      </ul>
+      And a few more I'm forgetting as well.
+    </p>
+    <p>
+       This UEFI firmware does have a few limitations however: among other things, it lacks the ability to boot in Legacy Mode (often referred to as UEFI-CSM; this will likely never be implemented). It currently does not support TPM management or UEFI Secure Boot.  The UI is also not as polished as other UEFI implementations, but that's open source for you :)
+    </p>
+    <p>
+      All of these issues are being worked on, and hopfully in the near future all Full ROM firmware offered by the Firmware Utility Script will be fully UEFI-compatible. For now, feel free to check the status on/report any issues <a href="https://github.com/MrChromebox/firmware/issues" target="_blank"> on the Github tracker</a>.
+    </p>
+  </body>
+</html>

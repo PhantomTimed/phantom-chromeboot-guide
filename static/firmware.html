@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Firmware</title>
+  </head>
+  <body>
+    <h3 id="top">ChromeOS Device Firmware</h3>
+    <p>
+      The firmware used by ChromeOS devices is built around serveral open-source projects, and consists (mainly) of a hardware init component (<a href="http://www.coreboot.org" target="_blank">coreboot</a>) and one or more payloads (depthcharge for Verified Boot and ChromeOS, <a href="http://www.seabios.org" target="_blank">SeaBIOS</a> for Legacy Boot Mode) which are subsequently executed.  The firmware resides on an SPI flash chip and uses the layout shown below.  The shaded sections at the bottom are read-only, which is enforced by the firmware write-protect screw on the main board (sometimes with a sticker as well on some newer models).  When we talk about updating the firmware on ChromeOS devices, we're referring to either the RW_LEGACY or (RO) BOOT_STUB sections, or to the entire firmware image (often referred to as a "full ROM").  These three update types are described in more detail below.
+    </p>
+    <p><center><img src="../images/stock_firmware_layout.png" style="max-width:70%;"></center></p>
+    <h3>Firmware Update Types</h3>
+    <p>
+      <ul style="list-style-type:none">
+        <li><strong>RW_LEGACY</strong>
+          <ul>
+            <li>Updates/replaces the stock legacy boot payload (SeaBIOS) included on many models;
+            supplements the ChromeOS / secure boot payload</li>
+            <li>Leaves all stock functionality intact, including the Developer Mode boot screen and Recovery Mode functionality</li>
+            <li>Allows device to dual-boot another OS alongside ChromeOS</li>
+            <li>Does not require disabling the firmware write-protect</li>
+            <li>Carries zero risk of bricking the device</li>
+            <li>On many models, includes bugfixes and enables additional functionality</li>
+          </ul>
+          <p>
+            The <strong>RW_LEGACY</strong> firmware is for users who want to dual-boot ChromeOS + Linux, or users who want to run Linux without having to open the device/disable the firmware write-protect (and are ok with the accompanying limitations).
+          </p>
+      </li>
+      <br>
+      <li><strong>BOOT_STUB</strong> (now deprecated; listed for historical purposes only)
+        <ul>
+          <li>Replaces the ChromeOS Verified Boot firmware payload (depthcharge) with a legacy boot payload (SeaBIOS)</li>
+          <li>Removes the Developer Mode boot screen (white "OS verification is OFF")</li>
+          <li>Removes the ability to run ChromeOS</li>
+          <li>Requires the firmware write-protect to be disabled</li>
+          <li>When flashed via the ChromeOS Firmware Utility Script, has a "built-in" backup function, so easy to restore without having to keep track of the backup file</li>
+          <li>Leaves the Recovery Mode ( <span class="keystroke">[ESC+REFRESH+POWER]</span> ) initiation intact
+            <ul type="square">
+              <li>If you engage this key sequence, your device will try to boot into Recovery Mode, which no longer exists</li>
+              <li>To escape the Recovery Mode "black hole", you will have to disassemble the device and briefly disconnect the battery</li>
+              <li>TL;DR - be careful not to do it :)</li>
+            </ul>
+          </li>
+          <li>Was a stop-gap solution for Baytrail devices, which for a long time didn't have a Full ROM firmware available</li>
+        </ul>
+        <p>
+          The <strong>BOOT_STUB</strong> firmware was originally an option for some platforms which lacked UEFI (Full ROM) firmware support, but it's no longer needed and support for it has been dropped).
+        </p>
+      </li>
+      <br>
+      <li><strong>(UEFI) Full ROM</strong>
+        <ul>
+          <li>A complete firmware image which includes updated/customized versions of the hardware init component (coreboot) and UEFI boot payload (Tianocore); Chromeboxes have the option of a Legacy Boot (SeaBIOS) firmware also, since some specialized Linux distros run on them are not yet UEFI compatible (e.g., roon)</li>
+          <li>Removes the developer mode boot (white "OS verification is OFF") screen</li>
+          <li>Completely removes the ability to run ChromeOS (and ChromeOS Recovery Mode), creating a small risk of bricking your device</li>
+          <li>Offers the best support for booting all OSes besides ChromeOS</li>
+          <li>Adds full hardware support for virtualization (vmx / VT-x)</li>
+          <li>Fixes many bugs and/or idiosyncrasies associated with the stock firmware</li>
+          <li>UEFI firmware contains updated EC firmware as well, which brings additional fixes on most Chromebooks (mainly keyboard related)</li>
+          <li>Requires installation of a UEFI-compatible OS after flashing</li>
+          <li>Essentially turns your ChromeOS device into a "regular" PC / laptop</li>
+        </ul>
+        <p>
+          The <strong>(UEFI) Full ROM</strong> firmware is the best option for all users who no longer need/want to run ChromeOS (ie, want to run Linux/Windows exclusively), and who don't mind opening their device to disable the firmware write-protect.
+        </p>
+      </li>
+    </ul>
+    <p>
+      <br>Firmware updates are exclusively available via the <a href="https://mrchromebox.tech/#fwscript">ChromeOS Firmware Utility Script</a>, though not all types are available for all devices.  See the <a href="https://mrchromebox.tech/#devices">Device Compatibility list</a> for full details.
+    </p>
+    <br>
+    <h3>ChromeOS Firmware Boot Flags (GBB Flags)</h3>
+    <p>
+      The ChromeOS firmware boot flags / Google Binary Block (GBB) flags are firmware level settings stored directly in the firmware flash chip itself in a read-only (RO) area, and therefore require the firmware write protect to be disabled before setting. The GBB flags control the behavior of the firmware payload used to boot ChromeOS (depthcharge); they are used to set the default boot mode (ChromeOS or Legacy Boot Mode),  the Developer Mode boot screen timeout (2s or 30s), prevent exiting Developer Mode via spacebar, and to enable Legacy Boot Mode regardless of crossystem <code>dev_boot_legacy</code> setting, among other things.
+    </p>
+    <p>
+      <strong>Important:</strong> The GBB Flags are only valid when using the the stock firmware, or stock + RW_LEGACY firmware update.  They have no effect (and cannot be set) when using the UEFI Full ROM firmware.
+    </p>
+    <p>
+      Most users should not attempt to set these manually, but instead use the <a href="javascript:document.getElementById('fwscript').click()">ChromeOS Firmware Utility Script</a> to set them based on their preferred default boot mode and boot timeout (the script automatically sets the Developer Mode and Legacy Boot Mode overrides for all options except factory default). For those curious, a full description of all the GBB flags can be found in <a href="https://chromium.googlesource.com/chromiumos/platform/vboot/+/master/_vboot_reference/firmware/include/gbb_header.h"  target="_blank">Google's source code here</a>.
+    </p>
+    <br>
+    <h3>Custom Firmware / Firmware Updates</h3>
+    <p>
+      The components of the stock firmware for any given ChromeOS device can be found in the device-specific branches of Google's firmware trees:<br>
+      <br>
+      <a href="https://chromium.googlesource.com/chromiumos/third_party/coreboot/" target="_blank">https://chromium.googlesource.com/chromiumos/third_party/coreboot</a><br>
+      <a href="https://chromium.googlesource.com/chromiumos/platform/depthcharge/" target="_blank">https://chromium.googlesource.com/chromiumos/platform/depthcharge</a><br>
+      <a href="https://chromium.googlesource.com/chromiumos/third_party/seabios/" target="_blank">https://chromium.googlesource.com/chromiumos/third_party/seabios</a><br>
+    </p>
+    <p>
+      For instance, the coreboot component for the Asus Chromebox CN60 (PANTHER) is <a href="https://chromium.googlesource.com/chromiumos/third_party/coreboot/+/firmware-panther-4920.24.B" target="_blank">https://chromium.googlesource.com/chromiumos/third_party/coreboot/+/firmware-panther-4920.24.B</a>
+    </p>
+    <p>
+      The Google firmware branch for a specific device is pretty much a fixed snapshot of the firmware component at/around the time of the device's release, and usually has minimal bugfix updates after release.  In contrast, the firmware updates available here via the Firmware Utility Script are built using the latest upstream (main / master copy) source code directly from the coreboot and SeaBIOS projects, with additional fixes/tweaks applied on top.
+    </p>
+    <p>
+      The upstream repositories for coreboot and SeaBIOS can be found on github:<br>
+      <br>
+      <a href="https://github.com/coreboot/coreboot" target="_blank">https://github.com/coreboot/coreboot</a><br>
+      <a href="https://github.com/coreboot/seabios" target="_blank">https://github.com/coreboot/seabios</a><br>
+    </p>
+    <p>
+      My personal coreboot, SeaBIOS, Tianocore, and EC firmware repositories, along with the source for the scripts on this site, are also available on github:<br>
+      <br>
+      <a href="https://github.com/MrChromebox/coreboot" target="_blank">https://github.com/MrChromebox/coreboot</a><br>
+      <a href="https://github.com/MrChromebox/SeaBIOS" target="_blank">https://github.com/MrChromebox/SeaBIOS</a><br>
+      <a href="https://github.com/MrChromebox/edk2" target="_blank">https://github.com/MrChromebox/edk2</a><br>
+      <a href="https://github.com/MrChromebox/scripts" target="_blank">https://github.com/MrChromebox/scripts</a><br>
+    </p>
+    <p>
+      These repos contain not only the source used to build the current firmware releases, but also the build scripts and configurations used as well.  The only components not included are the various binary "blobs" which are not redistributable; if you want to build your own firmware, you have to extract these blobs from your existing factory firmware (there are instructions for doing so <a href="http://www.chromium.org/chromium-os/developer-information-for-chrome-os-devices/upstream-coreboot-on-intel-haswell-chromebook" target="_blank">on chromium.org</a>; these are written for Haswell devices but apply more broadly).
+    </p>
+  </body>
+</html>
+
+
+

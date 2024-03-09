@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+</head>
+
+<html>
+  <body>
+    <h3 id="top">ChromeOS Firmware Utility Script</h3>
+
+    <p>
+      The ChromeOS Firmware Utility Script simplifies the most common functions most users need when interacting with the firmware on their ChromeOS device.  It can be run from ChromeOS, or any Linux which has a full Bash shell (so LibreELEC users need to boot a Ubuntu Live USB (eg) and run it from there).  Currently, it allows the user to:
+      <ul>
+        <li>Install/Update the RW_LEGACY firmware (allows dual booting of ChromeOS + Linux)</li>
+        <li>Install/Update coreboot/UEFI Full ROM firmware (for running Linux/Windows without ChromeOS)</li>
+        <li>Set the Boot Options (GBB Flags) (only for stock ChromeOS firmware)</li>
+        <li>Set the device's Hardware ID (only for stock ChromeOS firmware)</li>
+        <li>Remove the ChromeOS Developer/Recovery mode Bitmaps (only for stock ChromeOS firmware)</li>
+        <li>Restore the ChromeOS Bitmaps (only for stock ChromeOS firmware)</li>
+        <li>Restore the Stock Firmware (only for devices which have not reached EOL)</li>
+      </ul>
+    </p>
+    <p>
+      At startup, the Firmware Utility Script will automatically detect the device, OS, and current firmware details, and show a customized menu options based on this information.  Some options may be greyed-out/disabled for some devices. Because most of these operations are being done to normally read-only parts of the firmware, the firmware write protect will need to be removed for most of the script's functions.  This is documented for each function below, and the script will likewise check and display the write-protect state for each function that requires it to be disabled.
+    </p>
+    <p>
+      <h4>IMPORTANT:</h4> Due to recent changes in ChromeOS' security settings, you may need to use a new set of commands to run the Firmware Utility Script under ChromeOS. Running it under Linux can use the same old one-line command.<br>
+      Also, you must execute these commands **as a normal/non-root user**. Running them as root will break things. DO NOT RUN 'SUDO SU' BEFORE RUNNING THE SCRIPT CMD BELOW.<br>
+	  And do note that in the script command below, it's `-LO` <b>(L capital O), not L zero.</b><br><br>
+	  To download and run this script under ChromeOS or Linux, from a terminal/shell type:<br>
+      <code>cd; curl -LO mrchromebox.tech/firmware-util.sh && sudo bash firmware-util.sh</code><br>
+      and press enter.<br>
+	  <br> 
+	  If you encounter certificate related errors when downloading the script from ChromeOS, then add <code>-k</code> to the curl command and script command to bypass SSL certificate checking as so:<br>
+	  <code>cd; curl -LOk mrchromebox.tech/firmware-util.sh && sudo bash firmware-util.sh</code><br>
+      and press enter.<br>
+    </p>
+    <p>
+    <b>REALLY READ THIS</b>: Under ChromeOS, this script must be run from a crosh shell (logged in, normally or as a guest: CTRL+ALT+T, type 'shell', press enter) or VT2 (from login screen: CTRL+ALT+F2, login 'chronos'); it cannot be run from a crostini (penguin) terminal as that is a virtualized container and lacks the necessary access to read or modify the firmware.
+    </p>
+    <p>
+      <center><img src="../images/fwutil_cros_wp-on.png"><br>Firmware Utility Script, on device with stock firmware and WP enabled</center>
+    </p>
+    <p>
+      <center><img src="../images/fwutil_cros_wp-off.png"><br>Firmware Utility Script, on device with stock firmware and WP disabled</center>
+    </p>
+    <p>
+      <center><img src="../images/fwutil_uefi_menu.png"><br>Firmware Utility Script, on device with Full ROM firmware and WP disabled</center>
+    </p>
+    <p>
+	In the screenshots above, only the script functions available for the device and current firmware are enabled (cyan text); unavailable functions are in grey.  Features which require the firmware WP to be disabled are clearly labeled as such, along with the ability of that function to be used based on the current WP state.
+    </p>
+    <br>
+    <h3>Script Functions Explained</h3>
+    <p>
+      <ul>
+        <li><strong>Install/Update the RW_LEGACY Firmware</strong>
+          <p>
+            This option performs two simple tasks: it sets the crossystem boot flag necessary to enable Legacy Boot mode, and it installs an RW_LEGACY firmware update appropriate for the device.  Users will have the option to set the default boot device (internal storage [default] or USB/SD); Haswell/Broadwell Chromebox users will also have the option to enable "headless" (no display attached) booting, which is really only useful if you're going to run the box without a display and connect remotely (eg, via ssh).  Changing either of these options requires re-running this script function.
+          </p>
+          <p>
+            After updating the RW_LEGACY firmware, Legacy Boot Mode can be accessed via <span class="keystroke">[CTRL+L]</span> on the Developer Mode boot screen.  It can also be set as the default by changing the GBB Flags via 'Set Boot Options' feature below.
+          </p>
+          <p>
+          <strong>Requires firmware write-protect disabled:</strong> <code>NO</code>
+          </p>
+      </li>
+
+      <br>
+      <li><strong>Install/Update UEFI (Full ROM) Firmware</strong>
+          <p>
+            As this is a full replacement firmware, the script will offer users the option to back up their stock firmware on USB (required if the script is not capable of providing a stock firmware image).
+         </p>
+          <p>
+            As Chromeboxes store their Ethernet MAC address in the RO_VPD (read-only vital product data) region of the stock firmware, the script will extract that region from the stock firmware and inject it into the new firmware ensuring the unique MAC address isn't lost.  It will also persist the VPD region across firmware updates, so this is all transparent to the user.
+          </p>
+          <p>
+            After installing the UEFI (Full ROM) Firmware, your device will boot directly in UEFI Mode; ChromeOS will not be able boot. Your ChromeOS device is now a "regular PC," and you can install the OS of your choice without any special instructions.
+          </p>
+          <p>
+          <strong>Requires firmware write-protect disabled:</strong> <code>YES</code>
+          </p>
+      </li>
+      <br>
+        <li><strong>Set Boot Options (GBB Flags)</strong>
+          <p>
+            This script function allows one to change the timeout for the Developer Mode boot screen (2s or 30s) and the default boot target (ChromeOS or Legacy Boot Mode). Setting the boot target to Legacy Boot removes the requirement of pressing  <span class="keystroke">[CTRL+L]</span> at boot; instead, you must press  <span class="keystroke">[CTRL+D]</span> to boot ChromeOS.  This function is just a wrapper around the <code>gbb_utility</code> application built into ChromeOS that will read the GBB region from the stock firmware, set the GBB flags based on user input, and write it back to flash.  For all options except 'Factory Default,' the GBB flags will also be set to force-enable legacy booting (GBB_FLAG_FORCE_DEV_BOOT_LEGACY), which overrides the crosssytem <code>dev_boot_legacy</code> flag, and to force-enable Developer Mode (GBB_FLAG_FORCE_DEV_SWITCH_ON), which prevents exiting Developer Mode via the spacebar (either accidentially or intentionally).
+          </p>
+          <p>
+            Regardless of which default boot mode is selected, one can always override the default via keystroke: <span class="keystroke">[CTRL+D]</span> for ChromeOS Developer Mode, or <span class="keystroke">[CTRL+L]</span> for Legacy Boot Mode.
+          </p>
+          <p>
+            <strong>Note:</strong> Whenever the GBB Flags are set to anything besides the Factory Default, their current value will be displayed in a small black box in the upper-left corner of the Developer Mode boot screen, along with other some other firmware/OS-related info.  This is normal and no cause for alarm, though you'll need to re-run the script and reset them to the Factory Default before exiting Developer Mode (should you want to do so).
+          </p>
+          <p>
+            After setting the Boot Options / GBB flags, the boot timeout and default OS will be whatever you selected, and can be changed at any time by re-running this script function.
+          </p>
+          <p>
+            <strong>Supported Devices:</strong> <code>All ChromeOS devices running stock (or stock + RW_LEGACY) firmware</code>
+          </p>
+          <p>
+          <strong>Requires firmware write-protect disabled:</strong> <code>YES</code>
+          </p>
+      </li>
+      <br>
+      <li><strong>Set Hardware ID (HWID)</strong>
+          <p>
+            This script function is also just a wrapper around the <code>gbb_utility</code> application built into ChromeOS.  It will read the GBB region from the stock firmware, set the HWID based on user input, and write it back to flash.  The only time this function is needed is if one flashed a generic recovery image firmware (aka a shellball ROM) from a source *other than this script* instead of restoring a backup of their own device firmware.  Shellball ROMs extracted from a recovery image (or obtained from other sites/sources) have a generic HWID embedded which ChromeOS does not recognize as valid for purposes of OS and firmware updates (among other things), so it's necessary to set a valid one.  HWIDs aren't unique, so any valid one will do.
+          </p>
+          <p>
+            <strong>Note:</strong> If you restored your stock firmware using the option from this script, it is not necesary to set the HWID afterward.
+          </p>
+          <p>
+            After setting a valid HWID, simply reboot and ChromeOS updates should work normally.
+          </p>
+          <p>
+            <strong>Supported Devices:</strong> <code>All ChromeOS devices running stock (or stock + RW_LEGACY) firmware</code>
+          </p>
+          <p>
+          <strong>Requires firmware write-protect disabled:</strong> <code>YES</code>
+          </p>
+      </li>
+      <br>
+      <li><strong>Remove ChromeOS Bitmaps</strong>
+          <p>
+            This function removes the ChromeOS bitmap (image) files used to display the Developer Mode and Recovery boot screens, leaving you with a simple black screen with white terminal text -- much easier on the eyes, esp when booting in a darkened environment.
+          </p>
+          <p><center><img src="../images/devmode_normal.png" style="max-width:40%;border:1px solid black">&nbsp;&nbsp;becomes&nbsp;&nbsp;<img src="../images/dev_no_bmp.png" style="max-width:40%;"></center></p>
+          <p>
+            <strong>Note:</strong> ChromeOS updates might occasionally restore the missing bitmaps, so if you're still running ChromeOS you may need to re-run this function as needed.
+          </p>
+          <p>
+              Credit to Joshua Stein for bringing this to my attention <a href="https://jcs.org/notaweblog/2016/08/26/openbsd_chromebook/#removing-the-splash-screen" target="_blank">via his blog</a> which I stumbled upon somehow.
+          </p>
+          <p>
+		<strong>Supported Devices:</strong> <code>All pre-Skylake/pre-ApolloLake ChromeOS devices running stock (or stock + RW_LEGACY) firmware</code>
+          </p>
+          <p>
+          <strong>Requires firmware write-protect disabled:</strong> <code>YES</code>
+          </p>
+      </li>
+      <br>
+      <li><strong>Restore ChromeOS Bitmaps</strong>
+          <p>
+            This script function reverses the function above :)
+          </p>
+          <p>
+            <strong>Supported Devices:</strong> <code>All pre-Skylake/pre-ApolloLake ChromeOS devices running stock (or stock + RW_LEGACY) firmware</code>
+          </p>
+          <p>
+          <strong>Requires firmware write-protect disabled:</strong> <code>YES</code>
+          </p>
+      </li>
+      <br>
+      <li><strong>Restore Stock BOOT_STUB</strong>
+          <p>
+            This script function will restore the stock BOOT_STUB for any device running a modified BOOT_STUB firmware.  It will first attempt to use the built-in backup created by this script, and failing that, will download the firmware from a recovery image (a shellball ROM) and extract the stock BOOT_STUB from that. This option is only displayed on devices running BOOT_STUB firmware.
+          </p>
+          <p>
+            After restoring the stock BOOT_STUB, you will need to reboot and reinstall ChromeOS from the recovery media.  You can also install the RW_LEGACY firmware if you're switching to it for some reason.
+          </p>
+          <p>
+            <strong>Supported Devices:</strong> <code>All Haswell, Broadwell, and Baytrail ChromeOS devices running modified BOOT_STUB firmware</code> (whether installed from this script or another)
+          </p>
+          <p>
+          <strong>Requires firmware write-protect disabled:</strong> <code>YES</code>
+          </p>
+      </li>
+      <br>
+      <li><strong>Restore Stock Firmware</strong>
+          <p>
+            This script function will restore the stock firmware, preferably from a backed-up copy on USB.  For most devices, if a user-provided backup is not available, the script will download the firmware from a recovery image (a shellball ROM).  For Chromeboxes, if the current fimware contains an embedded VPD region, it will be extracted and merged before flashing.  These (device-specific) shellball ROMs have been modified to include a valid hardware ID (HWID), so ChromeOS updates will work normally.  Support for flashing shellball ROMs for additional devices is planned for the near future.
+          </p>
+          <p>
+            After restoring the stock firmware, you will need to reboot and reinstall ChromeOS from the recovery media.  After booting ChromeOS, you will need to re-run this script and reset the Boot Flags/GBB Flags in order to exit Developer Mode and fully return to stock.
+          </p>
+          <p>
+            <strong>Supported Devices:</strong> <code>All non-EOL ChromeOS devices running non-stock firmware</code>
+          </p>
+          <p>
+          <strong>Requires firmware write-protect disabled:</strong> <code>YES</code>
+          </p>
+      </li>
+    </ul>
+    <p>
+        The Reboot and Power Off options are (hopefully) sufficiently self-explanitory :)
+    </p>
+    <p>
+      If running UEFI Full ROM firmware, there will be an additional option to clear the NVRAM. This will delete all bootorder entries stored in NVRAM, and they will be created again on the next boot (or next time grub is updated).
+  </p>
+    <br>
+    <p>
+      The source for the Firmware Utility Script (as well as all helper/accessory scripts) can be found <a href="https://github.com/MrChromebox/scripts" target="_blank">on my 'scripts' github repository</a>.  Any issues, feature requests, and/or improvements can be reported via the issue tracker or a pull request.
+    </p>
+  </body>
+</html>
