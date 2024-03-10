@@ -10,14 +10,14 @@
 
     <p>
         <h4 id="top">Q: I want to buy a Chromebook to run Windows or Linux -- which should I buy?</h4>
-        <b>A: Buying any modern (2017+) Chromebook with the intention of running Windows or Linux is a terrible idea, period. Most can't boot anything other than ChromeOS, and those that can run it poorly. Older models may fair better compatibility wise, but there are still lots of caveats, and it's not recommended to buy a Chromebook as a cheap Linux device. The days where Chromebooks ran Linux well ended with the 2015 models.
+        <b>A: Buying any modern (2017+) Chromebook with the intention of running Windows or Linux is a terrible idea, period. Most can't boot anything other than ChromeOS, and those that can run it poorly. Older models may fair better compatibility wise, but there are still lots of caveats, and it's not recommended to buy a Chromebook as a cheap Linux device. The days where Chromebooks ran Linux well ended with the 2015 models. It would be better to run the crostini container if you buy one anyways.
 	</b> 
     </p>
 
 
     <p>
         <h4 id="top">Q: I just want to boot Linux from USB on my Chromebook, what do I need to do?</h4>
-        <b>A:</b> Check the Supported Devices page, to ensure your device has functional RW_LEGACY firmware available. If so, then simply put your device into Developer Mode, then run my script and update the RW_LEGACY firmware (no need to disable the firmware write protect for this). Reboot, press CTRL+L to boot in Legacy Boot Mode, then press ESC and select your USB from the boot menu.
+        <b>A:</b> Check the Supported Devices page, to ensure your device has functional RW_LEGACY firmware available. If so, then simply put your device into Developer Mode, then run my script and update the RW_LEGACY firmware (no need to disable the firmware write protect for this). Reboot, press CTRL+L to boot in Legacy Boot Mode, then press ESC and select your USB from the boot menu. When I tested it, it powerwashed the system so be cautious of that.
     </p>
     <p>
         <h4 id="top">Q: I just installed the UEFI firmware, and now my device boots to a black screen that says 'shell'
@@ -43,7 +43,7 @@
             what do I do?</h4>
         <b>A:</b> Sounds like your Linux distro doesn't install the EFI bootloader in the default location - no worries,
         it's an easy fix: <br><br>
-        Type 'exit' to return to the UEFI settings menu, then select Boot Maintenance Manager. From there, select Boot
+        Type 'exit' to return to the UEFI settings menu, then select Boot (Maintenance) Manager. From there, select Boot
         From File, then navigate to and boot from /EFI/[distro name]/grubx64.efi (where [distro name] will be ubuntu,
         arch, debian, etc). Once your OS is booted, open a terminal/shell, and type the following (observing
         case):<br><br>
@@ -80,7 +80,7 @@
         option for your device.
     </p>
     <p>
-        <h4 id="top">Q: The Windows installer says none of my partitions are large enough to install Windows - halp?
+        <h4 id="top">Q: The Windows installer says none of my partitions are large enough to install Windows - help?
         </h4>
         <b>A:</b> When installing Windows on the internal storage of a ChromeOS device (which is usually 16/32GB at
         best), you need to first delete all the existing (ChromeOS) partitions -- even the EFI system partition -- and
@@ -92,7 +92,7 @@
         <b>A:</b> If you are having problems with USB drives not detecting:<br>
         &nbsp;&nbsp;&nbsp;&nbsp;Make sure you created the USB install media correctly:<br>
         <ul>
-            <li>Be sure to use a 64-bit OS; on the Windows side, use only Windows 10 -- Windows 7 will not work, Win
+            <li>Be sure to use a 64-bit OS; on the Windows side, use only Windows 10 and higher -- Windows 7 will not work, Win
                 8/8,1 doesn't support all the required drivers; 32-bit anything (Windows or Linux) will not work (the
                 UEFI firmware is 64-bit only)</li>
             <li>For Windows, use Rufus or the Windows Media Creation Tool. Almost any options in Rufus should work, but
@@ -107,7 +107,7 @@
                 support Legacy/CSM mode. All new PCs, even if they have a Legacy/CSM mode, ship with UEFI as the
                 default. Windows 8+ has good UEFI support. Linux has had EFI/UEFI support for over a decade. macOS has
                 never supported Legacy BIOS. Common *BSD variants either have UEFI support or are in the process of
-                adding it. You should not need any Legacy mode</li>
+                adding it. You should not need any Legacy mode. The issue may also be fixed by using a different port.</li>
         </ul>
         &nbsp;&nbsp;&nbsp;&nbsp;Some drives are slow and the firmware does not detect them in one go:<br>
         <ul>
@@ -154,7 +154,7 @@
         and then reboot
     </p>
     <p>
-        <h4 id="top">Q: I'm trying to install Cloudready and use in a managed environment, but getting an error related to the TPM  - how to I fix this?</h4>
+        <h4 id="top">Q: I'm trying to install ChromeOS Flex/CloudReady and use in a managed environment, but getting an error related to the TPM  - how to I fix this?</h4>
         <b>A:</b> The current UEFI firmware for Chromebooks doesn't support TPM management from the firmware interface, so you'll need to boot a Linux USB and reset the TPM from there.<br>
         This is most easily done with GalliumOS, but any distro with the `tpm-tools` package should work.<br>
         Distros other than GalliumOS may require booting with the `tpm_tis.interrupts=0` kernel parameter added.<br>
@@ -162,6 +162,7 @@
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sudo apt install tpm-tools<br>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sudo tpm_clear --force<br>
         then reboot, and Cloudready should work without issue.
+        Besides, just restore Stock Firmware if you want ChromeOS.
     </p>
     <p>
         <h4 id="top">Q: I am trying to boot GalliumOS (or another Linux distro) from USB and getting an error: <br>
