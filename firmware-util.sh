@@ -12,7 +12,7 @@
 #
 
 #where the stuff is
-script_url="https://raw.githubusercontent.com/MrChromebox/scripts/master/"
+script_url="https://raw.githubusercontent.com/EvilLaugherw/scripts/master/"
 
 #ensure output of system tools in en-us for parsing
 export LC_ALL=C
@@ -28,7 +28,7 @@ fi
 
 # clear screen / show banner
 printf "\ec"
-echo -e "\nMrChromebox Firmware Utility Script starting up"
+echo -e "\nPhantom Firmware Utility Script starting up"
 
 #check for cmd line param, expired CrOS certs
 if ! curl -sLo /dev/null https://mrchromebox.tech/index.html || [[ "$1" = "-k" ]]; then
