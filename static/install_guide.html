@@ -1,54 +1,15 @@
-<p><span style="font-family:Arial,Helvetica,sans-serif"><strong><u><span style="font-size:36px">Install Guide</span></u></strong></span><br />
-    Welcome to the Chromeboot Install Guide, this will guide you through installing chromeboot.</p>
-    
-    <p>&nbsp;</p>
-    
-    <p><span style="font-size:28px">Initial Setup:</span><br />
-    Before we can Chromeboot our device, Google very obviously doesn&#39;t let consumers do this by default.<br />
-    There are some things we need to do before we can do this.<br />
-    Please identify your devices release date and use them accordingly.<br />
-    <br />
-    <span style="font-size:20px">Pre-2017 Chromebooks</span></p>
-    
-    <p>Since Google didn&#39;t put a TPM chip that controls write-protect, this will be easier.</p>
-    
-    <p>1. Unscrew the back of your Chromebook and pry it off. (You can look at a iFixIt guide if you need more info.)<br />
-    2. (I don&#39;t own one, so this may not be optimal) Unscrew every screw and put it back in if it doesn&#39;t have conductive pads below it.<br />
-    3. Once one with conductive pads is found, don&#39;t screw it back in and store the screw somewhere safe.<br />
-    4. Put the back onto the device, and screw it back in. You are now ready to flash firmware! Continue to the Flashing Guide.<br />
-    <br />
-    <span style="font-size:20px">2017+ Chromebooks</span></p>
-    
-    <p>Googles grown another eye, so this guide will be a bit harder.<br />
-    <br />
-    1. Unscrew the back of your Chromebook and pry it off. (You can look at a iFixit guide if you need more info)<br />
-    2. Disconnect the battery safely. Avoid using metal objects as this may short out a pin.<br />
-    3. Put the back onto the Chromebook, but&nbsp;<strong>DON&#39;T&nbsp;</strong>click it back on. Instead, place it onto the Chromebook and rotate the device.<br />
-    4. Plug the Chromebook into power. If you did everything before, there should now be a red flashing light. Power the device on<br />
-    5. If not already, put the device into developer mode. You can do this by pressing Esc+Refresh+Power on most models, then pressing CTRL+D and ENTER.<br />
-    6. Log into an account. A guest one is perfectly fine for this.<br />
-    7. Open a VT-2 terminal by pressing CTRL+ALT+F2. Log in as user &quot;chronos&quot;. No password will be required, nor should one be set.<br />
-    8. Type in &#39;sudo sh&#39;, then type&nbsp;&#39;flashrom -p internal &mdash;wp-disable&#39;<br />
-    9. You&#39;ve completed the process! You should reboot your device, or if you wish to connect the battery shut it down instead.</p>
-    
-    <p><br />
-    <span style="font-size:28px">Flashing the Firmware</span></p>
-    
-    <p>With all of that done, we can now start flashing firmware.</p>
-    
-    <p>1. Download and start the firmware utility using this command:</p>
-    
-    <pre>
-    <code>cd; curl -LO evillaugherw.github.io/phantom-chromeboot-guide/firmware-util.sh &amp;&amp; sudo bash firmware-util.sh<code>&nbsp;</code></code></pre>
-    
-    <p>2. Wait for it to load.<br />
-    3. Once it has loaded, you should see this screen:</p>
-    
-    <p><img alt="" src="https://phantomtimed.github.io/phantom-chromeboot-guide/images/fwutil_cros_wp-off.png" style="height:374px; width:573px" /></p>
-    
-    <p>&quot;Fw WP&quot; should say disabled. If not, go back to Initial Setup.<br />
-    4. You&#39;ve made it this far! Go ahead and press &quot;2&quot;.<br />
-    Follow the warnings, plug in external media for your backup and your done! ChromeOS is no longer bootable, so you must get another media device that has a UEFI-compatible OS loaded.<br />
-    <br />
-    This is all that I&#39;ll be writing for now. You can&nbsp;<a href="https://github.com/EvilLaugherw/phantom-chromeboot-guide/pulls">submit a pull request</a>&nbsp;here if theres any info that should be added.</p>
-    
+<p><span style="font-family:Arial,Helvetica,sans-serif;font-size:36px;"><strong><u>Install Guide</u></strong></span><br>Welcome to the Chromeboot Install Guide, this will guide you through installing chromeboot.</p>
+<p>&nbsp;</p>
+<p><span style="font-size:28px;">Initial Setup:</span><br>Before we can Chromeboot our device, Google very obviously doesn't let consumers do this by default.<br>There are some things we need to do before we can do this.<br>Please identify your devices release date and use them accordingly.<br><br><span style="font-size:20px;">Pre-2017 Chromebooks</span></p>
+<p>Since Google didn't put a TPM chip that controls write-protect, this will be easier.</p>
+<p>1. Unscrew the back of your Chromebook and pry it off. (You can look at a iFixIt guide if you need more info.)<br>2. (I don't own one, so this may not be optimal) Unscrew every screw and put it back in if it doesn't have conductive pads below it.<br>3. Once one with conductive pads is found, don't screw it back in and store the screw somewhere safe.<br>4. Put the back onto the device, and screw it back in. You are now ready to flash firmware! Continue to the Flashing Guide.<br><br><span style="font-size:20px;">2017+ Chromebooks</span></p>
+<p>Googles grown another eye, so this guide will be a bit harder.<br><br>1. Unscrew the back of your Chromebook and pry it off. (You can look at a iFixit guide if you need more info)<br>2. Disconnect the battery safely. Avoid using metal objects as this may short out a pin.<br>3. Put the back onto the Chromebook, but&nbsp;<strong>DON'T&nbsp;</strong>click it back on. Instead, place it onto the Chromebook and rotate the device.<br>4. Plug the Chromebook into power. If you did everything before, there should now be a red flashing light. Power the device on<br>5. If not already, put the device into developer mode. You can do this by pressing Esc+Refresh+Power on most models, then pressing CTRL+D and ENTER.<br>6. Log into an account. A guest one is perfectly fine for this.<br>7. Open a VT-2 terminal by pressing CTRL+ALT+F2. Log in as user "chronos". No password will be required, nor should one be set.<br>8. Type in 'sudo sh', then type&nbsp;'flashrom -p internal —wp-disable'<br>9. You've completed the process! You should reboot your device, or if you wish to connect the battery shut it down instead.</p>
+<p><br><span style="font-size:28px;">Flashing the Firmware</span></p>
+<p>With all of that done, we can now start flashing firmware.</p>
+<p>1. Download and start the firmware utility using this command:</p>
+<pre><code class="language-plaintext">cd; curl -LO evillaugherw.github.io/phantom-chromeboot-guide/firmware-util.sh &amp;&amp; sudo bash firmware-util.sh&nbsp;</code></pre>
+<p>2. Wait for it to load.<br>3. Once it has loaded, you should see this screen:</p>
+<p><img src="https://evillaugherw.github.io/phantom-chromeboot-guide/images/fwutil_cros_wp-off.png" alt="" width="573" height="374"></p>
+<p>"Fw WP" should say disabled. If not, go back to Initial Setup.<br>4. You've made it this far! Go ahead and press "2".<br>Follow the warnings, plug in external media for your backup and your done! ChromeOS is no longer bootable, so you must get another media device that has a UEFI-compatible OS loaded.</p>
+<p>If you require to go back to stock firmware, the tool has a feature for that. You just need a backup, or there are other options. Launch a Linux Live USB (or use your existing install) then download and run the firmware util. Press on “Restore Stock Firmware”, insert a recovery usb, a usb containing a firmware backup, or if possible download it from the internet. The tool will guide you through!</p>
+<p>This is all that I'll be writing for now. You can&nbsp;<a target="_blank" rel="noopener noreferrer" href="https://github.com/EvilLaugherw/phantom-chromeboot-guide/pulls">submit a pull request</a>&nbsp;here if theres any info that should be added.</p>
